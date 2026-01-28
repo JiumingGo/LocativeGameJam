@@ -1,1 +1,23 @@
+using UnityEngine;
+
+public class ProjectileShooter : MonoBehaviour
+{
+    public GameObject projectilePrefab;
+    public Transform spawnPoint;
+    public float throwForce = 20f;
+
+    public void ThrowProjectile()
+    {
+        Debug.Log("Button pressed!");
+
+        GameObject projectile = Instantiate(
+            projectilePrefab,
+            spawnPoint.position,
+            spawnPoint.rotation
+        );
+
+        Rigidbody rb = projectile.GetComponent<Rigidbody>();
+        rb.linearVelocity = spawnPoint.forward * throwForce;
+    }
+}
 
