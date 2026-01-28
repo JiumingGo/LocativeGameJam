@@ -1,0 +1,20 @@
+using UnityEngine;
+
+public class Shooter : MonoBehaviour
+{
+    public GameObject projectilePrefab;
+    public Transform firePoint;
+    public float projectileSpeed = 20f;
+
+    public void Shoot()
+    {
+        GameObject projectile = Instantiate(
+            projectilePrefab,
+            firePoint.position,
+            firePoint.rotation
+        );
+
+        Rigidbody rb = projectile.GetComponent<Rigidbody>();
+        rb.velocity = firePoint.forward * projectileSpeed;
+    }
+}
