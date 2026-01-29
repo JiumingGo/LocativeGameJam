@@ -4,12 +4,18 @@ using UnityEngine;
 public class AlienMoveToCamera : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 1.2f;
-    [SerializeField] private float stopDistance = 1f;
+    [SerializeField] private float stopDistance = 2f;
+    [SerializeField] private float damageRange = 2.1f;
+    [SerializeField] private int damageAmount = 1;
+    [SerializeField] private float damageCooldown = 0.6f;
     [SerializeField] private float separationRadius = 0.8f;
     [SerializeField] private float separationStrength = 2.0f;
     [SerializeField] private LayerMask alienMask;
     [SerializeField] private bool faceMovement = true;
+    
     private Transform target;
+    private float damageTimer;
+    private PlayerHealth playerHealth;
 
     private void Start()
     {
@@ -18,14 +24,32 @@ public class AlienMoveToCamera : MonoBehaviour
         {
             target = Camera.main.transform;
         }
+        if (target != null)
+            playerHealth = target.GetComponentInParent<PlayerHealth>() ?? target.GetComponent<PlayerHealth>();
+
     }
 
     private void Update()
     {
+        damageTimer -= Time.deltaTime;
+
         if (!target) return;
         
         Vector3 toTarget = target.position - transform.position;
         float dist = toTarget.magnitude;
+        // If close enough, hurt player (with cooldown)
+        if (dist <= damageRange)
+        {
+            if (damageTimer <= 0f && playerHealth != null)
+            {
+                playerHealth.TakeDamage(damageAmount);
+                damageTimer = damageCooldown;
+            }
+
+            // Optional: stop pushing into the camera
+            return;
+        }
+
         if (dist <= stopDistance) return;
         
         Vector3 step = (toTarget / dist) * (moveSpeed * Time.deltaTime);

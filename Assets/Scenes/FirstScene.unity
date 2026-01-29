@@ -464,6 +464,7 @@ GameObject:
   - component: {fileID: 1336589136}
   - component: {fileID: 1336589141}
   - component: {fileID: 1336589142}
+  - component: {fileID: 1336589143}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -749,6 +750,23 @@ MonoBehaviour:
   projectilePrefab: {fileID: 8322675873003438057, guid: bb04fef20e8f7bf49a3c9b3da6d0bcbe, type: 3}
   projectileSpeed: 18
   fireCooldown: 0.2
+--- !u!114 &1336589143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1336589134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 824de5fdc50f5d548b08bc3188617110, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  maxHP: 10
+  invincibleSeconds: 0.5
+  onHealthChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1501392203
 GameObject:
   m_ObjectHideFlags: 0
