@@ -356,6 +356,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c984ac332eff34a43bdddcaf24eca50e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4012032269257437729}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c984ac332eff34a43bdddcaf24eca50e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6547562076432394067}
   m_SourcePrefab: {fileID: 100100000, guid: c984ac332eff34a43bdddcaf24eca50e, type: 3}
 --- !u!1 &5769795333191251754 stripped
 GameObject:
@@ -375,7 +378,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AlienMoveToCamera
   moveSpeed: 1.2
-  stopDistance: 1
+  stopDistance: 2
   separationRadius: 0.8
   separationStrength: 2
   alienMask:
@@ -444,11 +447,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea9bd4c1c62b9ad41ab55bbf7e65f73d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AlienMoveToCamera
-  moveSpeed: 1.2
-  stopDistance: 1
+  moveSpeed: 0.6
+  stopDistance: 1.5
   separationRadius: 0.8
   separationStrength: 2
   alienMask:
     serializedVersion: 2
     m_Bits: 64
   faceMovement: 1
+--- !u!114 &6547562076432394067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5769795333191251754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a94018b04d4ed2e47b1b82af3c083ff3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AlienHealth
+  maxHP: 3
