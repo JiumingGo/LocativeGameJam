@@ -64,6 +64,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Alien
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 74fe5a14dff83d14e8dbcad4942009d1, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -77,6 +81,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 74fe5a14dff83d14e8dbcad4942009d1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2868372789432666762}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 74fe5a14dff83d14e8dbcad4942009d1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 103619793836180354}
   m_SourcePrefab: {fileID: 100100000, guid: 74fe5a14dff83d14e8dbcad4942009d1, type: 3}
 --- !u!1 &1179236138393840639 stripped
 GameObject:
@@ -146,4 +153,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AlienMoveToCamera
   moveSpeed: 1.2
-  faceMovement: 1
+  stopDistance: 1
+  separationRadius: 0.8
+  separationStrength: 2
+  alienMask:
+    serializedVersion: 2
+    m_Bits: 64
+  faceMovement: 0
+--- !u!95 &103619793836180354
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1179236138393840639}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: c984ac332eff34a43bdddcaf24eca50e, type: 3}
+  m_Controller: {fileID: 9100000, guid: aa6b3dc246d5ea447ac067b14891ba34, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

@@ -590,12 +590,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcc553e242d6eb743921e80b6ca987bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AlienSpawner
-  alienPrefab: {fileID: 1179236138393840639, guid: e4544012be91d344bb8c376a22af0a7e, type: 3}
+  alienPrefab: {fileID: 5769795333191251754, guid: 1b0a0f24e792ed746a9540cbf5bec919, type: 3}
   spawnInterval: 1.5
   minDistance: 4
   maxDistance: 8
   heightOffset: -0.3
   horizontalOnly: 1
+  spawnClearRadius: 0.8
+  alienMask:
+    serializedVersion: 2
+    m_Bits: 64
+  spawnTries: 10
 --- !u!4 &1501392205
 Transform:
   m_ObjectHideFlags: 0

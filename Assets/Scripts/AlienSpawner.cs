@@ -19,10 +19,15 @@ public class AlienSpawner : MonoBehaviour
     [Header("Direction")]
     [Tooltip("If true, spawn mostly around you horizontally (Face Raiders vibe).")]
     [SerializeField] private bool horizontalOnly = true;
+    
+    [Header("Alien")]
+    [SerializeField] private float spawnClearRadius = 0.8f;
+    [SerializeField] private LayerMask alienMask;
+    [SerializeField] private int spawnTries = 10;
+
 
     private Transform cam;
     private float timer;
-    private Camera _camera;
 
     private void Start()
     {
@@ -49,26 +54,34 @@ public class AlienSpawner : MonoBehaviour
 
     private void SpawnOne()
     {
-        float dist = Random.Range(minDistance, maxDistance);
-
-        Vector3 dir;
-        if (horizontalOnly)
+        for (int attempt = 0; attempt < spawnTries; attempt++)
         {
-            // Random direction on XZ plane
-            Vector2 v = Random.insideUnitCircle.normalized;
-            dir = new Vector3(v.x, 0f, v.y);
+            float dist = Random.Range(minDistance, maxDistance);
+
+            Vector3 dir;
+            if (horizontalOnly)
+            {
+                Vector2 v = Random.insideUnitCircle.normalized;
+                dir = new Vector3(v.x, 0f, v.y);
+            }
+            else
+            {
+                dir = Random.onUnitSphere;
+            }
+
+            Vector3 spawnPos = cam.position + dir * dist;
+            spawnPos.y = cam.position.y + heightOffset;
+
+            // Check if spawn area is clear
+            if (Physics.CheckSphere(spawnPos, spawnClearRadius, alienMask))
+                continue; // try another position
+
+            Quaternion rot = Quaternion.LookRotation((cam.position - spawnPos).normalized, Vector3.up);
+            Instantiate(alienPrefab, spawnPos, rot);
+            return; // spawned successfully
         }
-        else
-        {
-            // Random direction on sphere
-            dir = Random.onUnitSphere;
-        }
 
-        Vector3 spawnPos = cam.position + dir * dist;
-        spawnPos.y = cam.position.y + heightOffset;
-
-        Quaternion rot = Quaternion.LookRotation((cam.position - spawnPos).normalized, Vector3.up);
-
-        Instantiate(alienPrefab, spawnPos, rot);
+        // If we get here, all tries failed (too crowded). Just skip this spawn tick.
     }
+
 }
