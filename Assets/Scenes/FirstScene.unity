@@ -2001,6 +2001,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameFlowUI
   hudRoot: {fileID: 1227230703}
+  arrow3D: {fileID: 0}
   mainMenuPanel: {fileID: 452100485}
   gameOverPanel: {fileID: 957691425}
   winPanel: {fileID: 1754776860}
@@ -2355,11 +2356,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 802591c8a29f7334c9e689bbbbffb705, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.15
+      value: -0.1499939
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 802591c8a29f7334c9e689bbbbffb705, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.408
+      value: 1.4079981
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 802591c8a29f7334c9e689bbbbffb705, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2371,7 +2372,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 802591c8a29f7334c9e689bbbbffb705, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 802591c8a29f7334c9e689bbbbffb705, type: 3}
       propertyPath: m_LocalRotation.y

@@ -3,14 +3,13 @@ using UnityEngine.SceneManagement;
 
 public class GameFlowUI : MonoBehaviour
 {
-    [Header("Panels")]
-    [SerializeField] private GameObject hudRoot; // drag HUD here
+    [Header("Panels")] [SerializeField] private GameObject hudRoot; // drag HUD here
+    [SerializeField] private GameObject arrow3D;
     [SerializeField] private GameObject mainMenuPanel;
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private GameObject winPanel;
 
-    [Header("Systems")]
-    [SerializeField] private AREncounterController encounterController;
+    [Header("Systems")] [SerializeField] private AREncounterController encounterController;
     [SerializeField] private PlayerHealth playerHealth;
 
     private void Start()
@@ -18,13 +17,19 @@ public class GameFlowUI : MonoBehaviour
         ShowMainMenu();
     }
 
+    private void SetGameplayUIVisible(bool visible)
+    {
+        if (hudRoot) hudRoot.SetActive(visible);
+        if (arrow3D) arrow3D.SetActive(visible);
+    }
+
     public void OnPressPlay()
     {
         mainMenuPanel.SetActive(false);
         gameOverPanel.SetActive(false);
         winPanel.SetActive(false);
-        
-        SetHudVisible(true);
+
+        SetGameplayUIVisible(true);
         // Start run
         if (playerHealth) playerHealth.ResetHealth();
         if (encounterController) encounterController.ResetRun();
@@ -37,8 +42,8 @@ public class GameFlowUI : MonoBehaviour
     {
         gameOverPanel.SetActive(true);
         winPanel.SetActive(false);
-        
-        SetHudVisible(false);
+
+        SetGameplayUIVisible(false);
         if (encounterController) encounterController.enabled = false;
     }
 
@@ -46,8 +51,8 @@ public class GameFlowUI : MonoBehaviour
     {
         winPanel.SetActive(true);
         gameOverPanel.SetActive(false);
-        
-        SetHudVisible(false);
+
+        SetGameplayUIVisible(false);
 
         if (encounterController) encounterController.enabled = false;
     }
@@ -63,16 +68,11 @@ public class GameFlowUI : MonoBehaviour
         if (mainMenuPanel) mainMenuPanel.SetActive(true);
         if (gameOverPanel) gameOverPanel.SetActive(false);
         if (winPanel) winPanel.SetActive(false);
-        
-        SetHudVisible(false);
-        
+
+        SetGameplayUIVisible(false);
+
         // Freeze gameplay logic until Play
         if (encounterController) encounterController.enabled = false;
-    }
-    
-    private void SetHudVisible(bool visible)
-    {
-        if (hudRoot) hudRoot.SetActive(visible);
     }
 
 }

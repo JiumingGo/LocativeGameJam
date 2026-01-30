@@ -31,14 +31,14 @@ public class SensorCompassHeading : MonoBehaviour
         IsReady = (mag != null) && (grav != null || accel != null);
     }
 
-    private void OnDisable()
-    {
-        // Optional: leave enabled to avoid Android/Unity toggling issues.
-        // If you do disable, do it consistently in one place.
-        if (mag != null) InputSystem.DisableDevice(mag);
-        if (grav != null) InputSystem.DisableDevice(grav);
-        if (accel != null) InputSystem.DisableDevice(accel);
-    }
+    // private void OnDisable()
+    // {
+    //     // Optional: leave enabled to avoid Android/Unity toggling issues.
+    //     // If you do disable, do it consistently in one place.
+    //     if (mag != null) InputSystem.DisableDevice(mag);
+    //     if (grav != null) InputSystem.DisableDevice(grav);
+    //     if (accel != null) InputSystem.DisableDevice(accel);
+    // }
 
     private void Update()
     {
