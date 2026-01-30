@@ -10,6 +10,10 @@ public class PlayerHealth : MonoBehaviour
 
     private int hp;
     private float invTimer;
+    
+    public int CurrentHP => hp;
+    public int MaxHP => maxHP;
+
 
     private void Awake()
     {
