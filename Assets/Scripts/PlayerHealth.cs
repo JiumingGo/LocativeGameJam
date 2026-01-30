@@ -3,10 +3,11 @@ using UnityEngine.Events;
 
 public class PlayerHealth : MonoBehaviour
 {
-    [SerializeField] private int maxHP = 10;
+    [SerializeField] private int maxHP = 100;
     [SerializeField] private float invincibleSeconds = 0.5f;
 
     public UnityEvent<int, int> onHealthChanged; // (current, max)
+    public UnityEvent onDied;
 
     private int hp;
     private float invTimer;
@@ -24,6 +25,13 @@ public class PlayerHealth : MonoBehaviour
     private void Update()
     {
         if (invTimer > 0f) invTimer -= Time.deltaTime;
+    }
+    
+    public void ResetHealth()
+    {
+        hp = maxHP;
+        invTimer = 0f;
+        onHealthChanged?.Invoke(hp, maxHP);
     }
 
     public bool CanTakeDamage => invTimer <= 0f;
@@ -44,6 +52,6 @@ public class PlayerHealth : MonoBehaviour
     private void Die()
     {
         Debug.Log("Player Dead!");
-        // Later: show UI, stop spawns, restart button, etc.
+        onDied?.Invoke();
     }
 }

@@ -27,8 +27,7 @@ public class LocationDebugUI : MonoBehaviour
         {
             locationText.text =
                 $"Lat: {data.latitude:F6}\n" +
-                $"Lon: {data.longitude:F6}\n" +
-                $"Acc: {data.horizontalAccuracy:F1}m";
+                $"Lon: {data.longitude:F6}\n";
         }
     }
 }

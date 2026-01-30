@@ -21,6 +21,7 @@ public class AlienHealth : MonoBehaviour
     }
     private void Die()
     {
+        FindFirstObjectByType<AREncounterController>()?.RegisterKill();
         Destroy(gameObject);
     }
 }

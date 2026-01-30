@@ -1,6 +1,9 @@
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
+using UnityEngine.Events;
+
+// This version uses the NEW Input System sensor heading (magnetometer + gravity)
+// via SensorCompassHeading.cs (the script I gave you).
 public class AREncounterController : MonoBehaviour
 {
     public enum State
@@ -10,11 +13,20 @@ public class AREncounterController : MonoBehaviour
         Encounter,
         BaseCleared
     }
-    
+    public UnityEvent onAllBasesCleared;
+
     [Header("References")]
     [SerializeField] private LocationServiceStarter locationStarter;
     [SerializeField] private AlienSpawner alienSpawner;
     [SerializeField] private PlayerShooter playerShooter;
+
+    [Header("Sensor Heading (New Input System)")]
+    [SerializeField] private SensorCompassHeading sensorHeading; // drag SensorHeading GO here
+    [SerializeField] private float fallbackHeadingIfNoSensor = 0f;
+
+    [Header("Arrow Smoothing")]
+    [SerializeField] private float arrowTurnSpeed = 12f;    // bigger = snappier
+    [SerializeField] private float arrowYawOffset = 0f;     // try 90 or -90 if model forward axis is different
 
     [Header("UI")]
     [SerializeField] private Transform arrow3D;
@@ -22,9 +34,9 @@ public class AREncounterController : MonoBehaviour
     [SerializeField] private TMP_Text distanceText;
 
     [Header("Campus Gate (Lat/Lon)")]
-    [SerializeField] private double campusLat = 50.7427222;   
-    [SerializeField] private double campusLon = -1.8961111; 
-    [SerializeField] private float campusRadiusMeters = 250f;
+    [SerializeField] private double campusLat = 50.7427222;
+    [SerializeField] private double campusLon = -1.8961111;
+    [SerializeField] private float campusRadiusMeters = 300f;
 
     [Header("Bases (Lat/Lon)")]
     [SerializeField] private Vector2[] baseLatLon; // x=lat, y=lon
@@ -40,12 +52,16 @@ public class AREncounterController : MonoBehaviour
     private void Start()
     {
         SetState(State.NotOnCampus);
+
         if (alienSpawner) alienSpawner.enabled = false;
         if (playerShooter) playerShooter.enabled = false;
+
+        // Do NOT use Input.compass here anymore. SensorCompassHeading handles sensors.
     }
 
     private void Update()
     {
+        // GPS readiness checks
         if (locationStarter != null && !locationStarter.Ready)
         {
             SetUI("Starting GPS...", "");
@@ -64,8 +80,9 @@ public class AREncounterController : MonoBehaviour
             return;
         }
 
-        var myLat = Input.location.lastData.latitude;
-        var myLon = Input.location.lastData.longitude;
+        // Read current lat/lon
+        double myLat = Input.location.lastData.latitude;
+        double myLon = Input.location.lastData.longitude;
 
         float distToCampus = (float)HaversineMeters(myLat, myLon, campusLat, campusLon);
 
@@ -73,24 +90,32 @@ public class AREncounterController : MonoBehaviour
         if (distToCampus > campusRadiusMeters)
         {
             SetState(State.NotOnCampus);
-            SetUI("Go to campus to start", $"Campus: {distToCampus:0}m");
             DisableEncounter();
+
+            float acc = Input.location.lastData.horizontalAccuracy;
+            SetUI("Go to campus to start", $"Campus: {distToCampus:0}m  Acc:{acc:0}m");
             return;
         }
 
-        // We’re on campus
+        // We’re on campus: navigate to current base
         Vector2 targetBase = baseLatLon[Mathf.Clamp(baseIndex, 0, baseLatLon.Length - 1)];
         float distToBase = (float)HaversineMeters(myLat, myLon, targetBase.x, targetBase.y);
 
         if (state != State.Encounter)
         {
-            // Navigation mode
             SetState(State.NavigateToBase);
             EnableNavigationUI();
             DisableEncounter();
 
-            UpdateArrow(myLat, myLon, targetBase.x, targetBase.y);
-            SetUI($"Find Base #{baseIndex + 1}", $"Base: {distToBase:0}m");
+            float heading = GetHeadingDegrees();
+            UpdateArrow(myLat, myLon, targetBase.x, targetBase.y, heading);
+
+            float acc = Input.location.lastData.horizontalAccuracy;
+
+            // Debug text (feel free to simplify later)
+            string headingSource = (sensorHeading != null && sensorHeading.IsReady) ? "Sensor" : "Fallback";
+            SetUI($"Find Base #{baseIndex + 1}",
+                $"Base: {distToBase:0}m  Acc:{acc:0}m  Heading:{heading:0}° ({headingSource})");
 
             // Trigger encounter when close enough
             if (distToBase <= baseTriggerRadiusMeters)
@@ -103,7 +128,6 @@ public class AREncounterController : MonoBehaviour
             // Encounter running
             SetUI($"Base #{baseIndex + 1} - Fight!", $"Kills: {killsThisBase}/{aliensToKillToClear}");
 
-            // If base cleared
             if (killsThisBase >= aliensToKillToClear)
             {
                 ClearBase();
@@ -111,23 +135,30 @@ public class AREncounterController : MonoBehaviour
         }
     }
 
+    private float GetHeadingDegrees()
+    {
+        if (sensorHeading != null && sensorHeading.IsReady)
+            return sensorHeading.HeadingDegrees;
+
+        // If sensor isn't ready, you can later plug in GPS-movement heading here.
+        return fallbackHeadingIfNoSensor;
+    }
+
     private void StartEncounter()
     {
+        if (arrow3D) arrow3D.gameObject.SetActive(false);
+
         SetState(State.Encounter);
         killsThisBase = 0;
 
         if (alienSpawner) alienSpawner.enabled = true;
         if (playerShooter) playerShooter.enabled = true;
-
-        if (arrow3D) arrow3D.gameObject.SetActive(false);
-
     }
 
     private void ClearBase()
     {
         SetState(State.BaseCleared);
 
-        // Stop spawning, but you can optionally allow existing aliens to finish
         if (alienSpawner) alienSpawner.enabled = false;
 
         baseIndex++;
@@ -135,6 +166,8 @@ public class AREncounterController : MonoBehaviour
         {
             SetUI("All bases cleared!", "GG");
             DisableEncounter();
+            if (arrow3D) arrow3D.gameObject.SetActive(false);
+            onAllBasesCleared?.Invoke();
             return;
         }
 
@@ -151,14 +184,12 @@ public class AREncounterController : MonoBehaviour
     private void EnableNavigationUI()
     {
         if (arrow3D) arrow3D.gameObject.SetActive(true);
-        
     }
 
     private void SetState(State s)
     {
         if (state == s) return;
         state = s;
-        // Debug.Log("State: " + state);
     }
 
     private void SetUI(string status, string distance)
@@ -168,18 +199,21 @@ public class AREncounterController : MonoBehaviour
     }
 
     // Arrow points to base: (bearing to target) - (device heading)
-    private void UpdateArrow(double myLat, double myLon, double targetLat, double targetLon)
+    private void UpdateArrow(double myLat, double myLon, double targetLat, double targetLon, float headingDegrees)
     {
         if (!arrow3D) return;
 
         float bearing = (float)BearingDegrees(myLat, myLon, targetLat, targetLon); // 0=N
-        float heading = Input.compass.trueHeading; // 0=N
+        float delta = Mathf.DeltaAngle(headingDegrees, bearing);
 
-        // Angle we need to turn relative to where the phone is facing
-        float delta = Mathf.DeltaAngle(heading, bearing);
+        Quaternion targetRot = Quaternion.Euler(0f, delta + arrowYawOffset, 0f);
 
-        // Rotate the arrow around the camera's up axis (yaw)
-        arrow3D.localRotation = Quaternion.Euler(0f, delta, 0f);
+        // Smooth turn
+        arrow3D.localRotation = Quaternion.Slerp(
+            arrow3D.localRotation,
+            targetRot,
+            1f - Mathf.Exp(-arrowTurnSpeed * Time.deltaTime)
+        );
     }
 
     // --- Math helpers ---
@@ -223,4 +257,21 @@ public class AREncounterController : MonoBehaviour
         if (state == State.Encounter)
             killsThisBase++;
     }
+    public void ResetRun()
+    {
+        // Reset progression
+        baseIndex = 0;
+        killsThisBase = 0;
+        SetState(State.NotOnCampus);
+
+        // Hide encounter systems until navigation
+        if (alienSpawner) alienSpawner.enabled = false;
+        if (playerShooter) playerShooter.enabled = false;
+
+        // Show arrow again
+        if (arrow3D) arrow3D.gameObject.SetActive(true);
+
+        SetUI("Starting...", "");
+    }
+
 }
