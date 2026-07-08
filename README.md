@@ -10,3 +10,7 @@ The game combines real-world campus exploration with 3D action gameplay. Players
 - 3D shooting gameplay triggered by reaching specific locations
 - Enemy behaviour where enemies move toward the player
 - Win condition based on clearing enemy nests across the campus
+
+## Screenshots
+
+![Gameplay Screenshot](screenshot.PNG)
